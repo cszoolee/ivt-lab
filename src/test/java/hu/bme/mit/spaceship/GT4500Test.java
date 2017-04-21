@@ -48,4 +48,121 @@ public class GT4500Test {
     verify(secondaryTorpedoStore, times(1)).fire(1);
   }
 
+  @Test
+  public void fireTorpedos_PrimaryEmpty_SecondSucces(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(false);
+        when(primaryTorpedoStore.isEmpty()).thenReturn(true);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(true);
+        when(secondaryTorpedoStore.isEmpty()).thenReturn(false);
+        // Act
+        boolean result = ship.fireTorpedos(FiringMode.SINGLE);
+
+        // Assert
+        assertEquals(true, result);
+        verify(secondaryTorpedoStore, times(1)).fire(1);
+  }
+
+  @Test
+  public void fireTorpedos_PrimaryTwiceSucces_SecondEmpty(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(true);
+        when(primaryTorpedoStore.isEmpty()).thenReturn(false);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(false);
+        when(secondaryTorpedoStore.isEmpty()).thenReturn(true);
+        // Act
+        boolean firstresult = ship.fireTorpedos(FiringMode.SINGLE);
+        boolean secondresult = ship.fireTorpedos(FiringMode.SINGLE);
+
+        // Assert
+        assertEquals(true, firstresult);
+        assertEquals(true, secondresult);
+        verify(primaryTorpedoStore, times(2)).fire(1);
+  }
+
+  @Test
+  public void fireTorpedos_Single_Fail_BothEmpty(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(false);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(false);
+        // Act
+        boolean result = ship.fireTorpedos(FiringMode.SINGLE);
+
+        // Assert
+        assertEquals(false, result);
+  }
+
+  @Test
+  public void fireTorpedos_All_Fail_BothEmpty(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(false);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(false);
+        // Act
+        boolean result = ship.fireTorpedos(FiringMode.ALL);
+
+        // Assert
+        assertEquals(false, result);
+  }
+
+  @Test
+  public void fireTorpedos_All_Fail_PrimaryFail(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(false);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(true);
+        // Act
+        boolean result = ship.fireTorpedos(FiringMode.ALL);
+
+        // Assert
+        assertEquals(false, result);
+        verify(primaryTorpedoStore, times(1)).fire(1);
+        verify(secondaryTorpedoStore, times(1)).fire(1);
+  }
+
+  @Test
+  public void fireTorpedos_All_Fail_SecondaryFail(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(true);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(false);
+        // Act
+        boolean result = ship.fireTorpedos(FiringMode.ALL);
+
+        // Assert
+        assertEquals(false, result);
+        verify(primaryTorpedoStore, times(1)).fire(1);
+        verify(secondaryTorpedoStore, times(1)).fire(1);
+  }
+
+  @Test
+  public void fireTorpedos_All_EmptyTorpedos(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(true);
+        when(primaryTorpedoStore.isEmpty()).thenReturn(true);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(false);
+        when(secondaryTorpedoStore.isEmpty()).thenReturn(true);
+        // Act
+        boolean result = ship.fireTorpedos(FiringMode.ALL);
+
+        // Assert
+        assertEquals(false, result);
+  }
+
+  @Test
+  public void fireTorpedos_Two_Succes(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(true);
+        when(primaryTorpedoStore.isEmpty()).thenReturn(false);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(true);
+        when(secondaryTorpedoStore.isEmpty()).thenReturn(false);
+        // Act
+        boolean firstresult = ship.fireTorpedos(FiringMode.SINGLE);
+        boolean secondresult = ship.fireTorpedos(FiringMode.SINGLE);
+
+        // Assert
+        assertEquals(true, firstresult);
+        assertEquals(true, secondresult);
+        verify(primaryTorpedoStore, times(1)).fire(1);
+        verify(primaryTorpedoStore, times(1)).fire(1);
+  }
+
+
 }
