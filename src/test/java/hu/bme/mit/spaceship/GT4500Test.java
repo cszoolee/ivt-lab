@@ -80,11 +80,30 @@ public class GT4500Test {
         verify(primaryTorpedoStore, times(2)).fire(1);
   }
 
-  @Test
+    @Test
+    public void fireTorpedos_PrimaryTwiceSecondFail_SecondEmpty(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(true);
+        when(primaryTorpedoStore.isEmpty()).thenReturn(false);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(false);
+        when(secondaryTorpedoStore.isEmpty()).thenReturn(true);
+        // Act
+        boolean firstresult = ship.fireTorpedos(FiringMode.SINGLE);
+        when(primaryTorpedoStore.isEmpty()).thenReturn(true);
+        boolean secondresult = ship.fireTorpedos(FiringMode.SINGLE);
+
+        // Assert
+        assertEquals(true, firstresult);
+        assertEquals(false, secondresult);
+    }
+
+    @Test
   public void fireTorpedos_Single_Fail_BothEmpty(){
         // Arrange
         when(primaryTorpedoStore.fire(1)).thenReturn(false);
+        when(primaryTorpedoStore.isEmpty()).thenReturn(true);
         when(secondaryTorpedoStore.fire(1)).thenReturn(false);
+        when(secondaryTorpedoStore.isEmpty()).thenReturn(true);
         // Act
         boolean result = ship.fireTorpedos(FiringMode.SINGLE);
 
@@ -133,10 +152,24 @@ public class GT4500Test {
   }
 
   @Test
-  public void fireTorpedos_All_EmptyTorpedos(){
+  public void fireTorpedos_All_PrimaryEmpty(){
         // Arrange
-        when(primaryTorpedoStore.fire(1)).thenReturn(true);
+        when(primaryTorpedoStore.fire(1)).thenReturn(false);
         when(primaryTorpedoStore.isEmpty()).thenReturn(true);
+        when(secondaryTorpedoStore.fire(1)).thenReturn(false);
+        when(secondaryTorpedoStore.isEmpty()).thenReturn(false);
+        // Act
+        boolean result = ship.fireTorpedos(FiringMode.ALL);
+
+        // Assert
+        assertEquals(false, result);
+  }
+
+  @Test
+  public void fireTorpedos_All_SecondaryEmpty(){
+        // Arrange
+        when(primaryTorpedoStore.fire(1)).thenReturn(false);
+        when(primaryTorpedoStore.isEmpty()).thenReturn(false);
         when(secondaryTorpedoStore.fire(1)).thenReturn(false);
         when(secondaryTorpedoStore.isEmpty()).thenReturn(true);
         // Act
